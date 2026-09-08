@@ -1,0 +1,32 @@
+# Larger than tiny; still a toy.
+DIE 0 0 200 100
+ROWS 10 10
+CELL a0 4 2
+CELL a1 4 2
+CELL a2 6 2
+CELL a3 4 2
+CELL b0 4 2
+CELL b1 8 2
+CELL b2 4 2
+CELL b3 4 2
+CELL c0 4 2
+CELL c1 4 2
+CELL c2 4 2
+CELL c3 6 2
+CELL d0 4 2
+CELL d1 4 2
+CELL d2 4 2
+CELL d3 4 2
+CELL e0 8 2
+CELL e1 4 2
+CELL e2 4 2
+CELL e3 4 2
+NET clk a0 b0 c0 d0 e0
+NET n0 a0 a1 a2
+NET n1 a2 a3 b0
+NET n2 b0 b1 b2 b3
+NET n3 c0 c1 c2
+NET n4 c2 c3 d0
+NET n5 d0 d1 d2 d3
+NET n6 e0 e1 e2
+NET n7 e2 e3 a0
