@@ -42,7 +42,7 @@ int main() {
     const double got = minipd::hpwl(d);
     const double want = 30.0;
     if (std::abs(got - want) > 1e-9) {
-        std::cerr << "HPWL Mismatch: hpwl=" << got << " want=" << want << "\n"
+        std::cerr << "HPWL Mismatch: hpwl=" << got << " want=" << want << "\n";
         return 1;
     }
 

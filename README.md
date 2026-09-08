@@ -7,6 +7,7 @@ The CLI and IR are meant to stay stable while the algorithms improve. Quality of
 ## Status
 
 Day 1: (2026-09-07). Skeleton done, testing method done, mini-parser done, small benchmark designs done, hpwl and random done, no snap yet
+Day 2: (2026-09-08). Added snap. Rule is snap to nearest legal row (round not floor) and then pack left with no extra space.
 
 
 ## Tiny netlist format

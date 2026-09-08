@@ -70,3 +70,6 @@ Testing/
 
 # CLI output
 out/
+
+# Local session notes — never commit
+SESSION.md
