@@ -9,6 +9,7 @@ The CLI and IR are meant to stay stable while the algorithms improve. Quality of
 Day 1: (2026-09-07).    Skeleton done, testing method done, mini-parser done, small benchmark designs done, hpwl and random done, no snap yet
 Day 2: (2026-09-08).    Added snap. Rule is snap to nearest legal row (round not floor) and then pack left with no extra space.
                         Added quadratic, better than random, although with snap only for legalize the results don't look as impressive as they should.
+                        Added abacus tetris, better HPWL than snap (310.8 vs 336 snap on my medium bench)
 
 
 ## Tiny netlist format
@@ -55,7 +56,7 @@ Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default 
 src/ir/          design IR
 src/io/          tiny-format parser
 src/place/       IPlacer — Random, quadratic
-src/legalize/    ILegalizer — Snap, Abacus
+src/legalize/    ILegalizer — Snap, Abacus (tetris,  cluster next)
 src/metrics/     HPWL
 src/viz/         SVG + qor.txt
 src/route/       header only; not started
