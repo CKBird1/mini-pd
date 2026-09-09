@@ -9,9 +9,6 @@ const char* SnapLegalizer::name() const {
 }
 
 void SnapLegalizer::legalize(Design& design) {
-    
-    //Will finish writing this and commit later
-    //Goal is to snap to nearest row, then populate left to right to attempt a basic legalization
     //Will certainly be updated with a better version later
 
     std::vector<std::vector<std::size_t>> sortedByRows(design.rows.size());
@@ -24,9 +21,7 @@ void SnapLegalizer::legalize(Design& design) {
         //We're happy with i, can use that info to pack cells into rows for local iteration and then dump the sort later
         sortedByRows[j].push_back(i);
     }
-    //We've now chosen a row snap for all cells, snapped to y only (not x) and sorted them into buckets in sortedByRows
-    //Now go over sortedByRows one row at a time, sort cells by x value, and then set new x value to play nice
-    
+
     for(std::size_t k = 0; k < sortedByRows.size(); ++k) {
         std::sort(sortedByRows[k].begin(), sortedByRows[k].end(), [&](std::size_t a, std::size_t b) {
             return design.cells[a].x < design.cells[b].x;

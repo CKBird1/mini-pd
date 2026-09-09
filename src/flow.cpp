@@ -1,6 +1,8 @@
 #include "io/parser.hpp"
 #include "legalize/snap.hpp"
 #include "metrics/hpwl.hpp"
+#include "place/placer.hpp"
+#include "place/quadratic.hpp"
 #include "place/random.hpp"
 #include "viz/qor.hpp"
 #include "viz/svg.hpp"
@@ -8,19 +10,22 @@
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 namespace fs = std::filesystem;
 
 static void usage(const char* argv0) {
-    std::cerr << "usage: " << argv0 << " <input.bench> -o <outdir> [--seed N]\n";
+    std::cerr << "usage: " << argv0
+              << " <input.bench> -o <outdir> [--seed N] [--placer random|quadratic]\n";
 }
 
 int main(int argc, char** argv) {
     std::string input;
     std::string outdir;
     std::uint32_t seed = 1;
+    std::string placer_name = "random";
 
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -36,6 +41,12 @@ int main(int argc, char** argv) {
                 return 2;
             }
             seed = static_cast<std::uint32_t>(std::stoul(argv[++i]));
+        } else if (a == "--placer") {
+            if (i + 1 >= argc) {
+                usage(argv[0]);
+                return 2;
+            }
+            placer_name = argv[++i];
         } else if (a == "-h" || a == "--help") {
             usage(argv[0]);
             return 0;
@@ -59,8 +70,17 @@ int main(int argc, char** argv) {
     try {
         minipd::Design design = minipd::parse_file(input);
 
-        minipd::RandomPlacer placer(seed);
-        placer.place(design);
+        std::unique_ptr<minipd::IPlacer> placer;
+        if (placer_name == "random") {
+            placer = std::make_unique<minipd::RandomPlacer>(seed);
+        } else if (placer_name == "quadratic") {
+            placer = std::make_unique<minipd::QuadraticPlacer>(seed);
+        } else {
+            std::cerr << "unknown placer: " << placer_name << "\n";
+            usage(argv[0]);
+            return 2;
+        }
+        placer->place(design);
 
         minipd::SnapLegalizer legalizer;
         legalizer.legalize(design);
@@ -70,7 +90,7 @@ int main(int argc, char** argv) {
         fs::create_directories(outdir);
         const fs::path out(outdir);
         minipd::write_placed_svg(design, (out / "placed.svg").string());
-        minipd::write_qor(design, input, placer.name(), legalizer.name(), wirelength,
+        minipd::write_qor(design, input, placer->name(), legalizer.name(), wirelength,
                          (out / "qor.txt").string());
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";

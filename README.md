@@ -6,8 +6,9 @@ The CLI and IR are meant to stay stable while the algorithms improve. Quality of
 
 ## Status
 
-Day 1: (2026-09-07). Skeleton done, testing method done, mini-parser done, small benchmark designs done, hpwl and random done, no snap yet
-Day 2: (2026-09-08). Added snap. Rule is snap to nearest legal row (round not floor) and then pack left with no extra space.
+Day 1: (2026-09-07).    Skeleton done, testing method done, mini-parser done, small benchmark designs done, hpwl and random done, no snap yet
+Day 2: (2026-09-08).    Added snap. Rule is snap to nearest legal row (round not floor) and then pack left with no extra space.
+                        Added quadratic, better than random, although with snap only for legalize the results don't look as impressive as they should.
 
 
 ## Tiny netlist format
@@ -43,17 +44,17 @@ Needs CMake 3.16+, a C++17 compiler (g++ 9+ or clang 9+).
 ## CLI
 
 ```
-./build/mini-pd <input.bench> -o <outdir> [--seed N]
+./build/mini-pd <input.bench> -o <outdir> [--seed N] [--placer random|quadratic]
 ```
 
-Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1.
+Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `random`.
 
 ## Layout
 
 ```
 src/ir/          design IR
 src/io/          tiny-format parser
-src/place/       IPlacer — Random first
+src/place/       IPlacer — Random, quadratic
 src/legalize/    ILegalizer — Snap first
 src/metrics/     HPWL
 src/viz/         SVG + qor.txt
