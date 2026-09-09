@@ -44,10 +44,10 @@ Needs CMake 3.16+, a C++17 compiler (g++ 9+ or clang 9+).
 ## CLI
 
 ```
-./build/mini-pd <input.bench> -o <outdir> [--seed N] [--placer random|quadratic]
+./build/mini-pd <input.bench> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]
 ```
 
-Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `random`.
+Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `random`. Default legalizer is `snap`; `--abacus` selects Abacus.
 
 ## Layout
 
@@ -55,7 +55,7 @@ Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default 
 src/ir/          design IR
 src/io/          tiny-format parser
 src/place/       IPlacer — Random, quadratic
-src/legalize/    ILegalizer — Snap first
+src/legalize/    ILegalizer — Snap, Abacus
 src/metrics/     HPWL
 src/viz/         SVG + qor.txt
 src/route/       header only; not started

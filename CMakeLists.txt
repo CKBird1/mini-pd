@@ -21,6 +21,7 @@ add_library(minipd
   src/place/random.cpp
   src/place/quadratic.cpp
   src/legalize/snap.cpp
+  src/legalize/abacus.cpp
 )
 target_include_directories(minipd PUBLIC src)
 minipd_warnings(minipd)

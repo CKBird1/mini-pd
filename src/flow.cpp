@@ -1,4 +1,5 @@
 #include "io/parser.hpp"
+#include "legalize/abacus.hpp"
 #include "legalize/snap.hpp"
 #include "metrics/hpwl.hpp"
 #include "place/placer.hpp"
@@ -18,7 +19,7 @@ namespace fs = std::filesystem;
 
 static void usage(const char* argv0) {
     std::cerr << "usage: " << argv0
-              << " <input.bench> -o <outdir> [--seed N] [--placer random|quadratic]\n";
+              << " <input.bench> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]\n";
 }
 
 int main(int argc, char** argv) {
@@ -26,6 +27,7 @@ int main(int argc, char** argv) {
     std::string outdir;
     std::uint32_t seed = 1;
     std::string placer_name = "random";
+    bool use_abacus = false;
 
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -47,6 +49,8 @@ int main(int argc, char** argv) {
                 return 2;
             }
             placer_name = argv[++i];
+        } else if (a == "--abacus") {
+            use_abacus = true;
         } else if (a == "-h" || a == "--help") {
             usage(argv[0]);
             return 0;
@@ -82,15 +86,20 @@ int main(int argc, char** argv) {
         }
         placer->place(design);
 
-        minipd::SnapLegalizer legalizer;
-        legalizer.legalize(design);
+        std::unique_ptr<minipd::ILegalizer> legalizer;
+        if (use_abacus) {
+            legalizer = std::make_unique<minipd::AbacusLegalizer>();
+        } else {
+            legalizer = std::make_unique<minipd::SnapLegalizer>();
+        }
+        legalizer->legalize(design);
 
         const double wirelength = minipd::hpwl(design);
 
         fs::create_directories(outdir);
         const fs::path out(outdir);
         minipd::write_placed_svg(design, (out / "placed.svg").string());
-        minipd::write_qor(design, input, placer->name(), legalizer.name(), wirelength,
+        minipd::write_qor(design, input, placer->name(), legalizer->name(), wirelength,
                          (out / "qor.txt").string());
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
