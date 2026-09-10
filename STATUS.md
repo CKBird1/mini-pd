@@ -10,3 +10,7 @@ Snap done. Beginning work on quadratic / force placer then abacus.
 Quadratic done. Beginning work on Abacus.
 Abacus tetris done, beginning work on clusters for true abacus.
 
+Date: 2026-09-09
+
+Finished true abacus using clusters. HPWL has improved.
+Starting on bookshelf.
