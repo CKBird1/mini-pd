@@ -1,4 +1,5 @@
 #include "io/parser.hpp"
+#include "io/bookshelf.hpp"
 
 #include <cctype>
 #include <fstream>
@@ -39,9 +40,29 @@ bool valid_name(const std::string& n) {
     return true;
 }
 
+bool has_ext(const std::string& path, const char* ext) {
+    const std::size_t n = path.size();
+    const std::size_t m = std::char_traits<char>::length(ext);
+    if (n < m) {
+        return false;
+    }
+    for (std::size_t i = 0; i < m; ++i) {
+        const unsigned char a = static_cast<unsigned char>(path[n - m + i]);
+        const unsigned char b = static_cast<unsigned char>(ext[i]);
+        if (std::tolower(a) != std::tolower(b)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }  // namespace
 
 Design parse_file(const std::string& path) {
+    if (has_ext(path, ".aux")) {
+        return parse_bookshelf(path);
+    }
+
     std::ifstream in(path);
     if (!in) {
         throw std::runtime_error("cannot open " + path);

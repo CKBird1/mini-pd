@@ -32,7 +32,7 @@ NET n1 c1 c2
 
 `#` starts a comment.
 
-Benches: `data/tiny.bench`, `data/medium.bench`.
+Benches: `data/tiny.bench`, `data/medium.bench`, `data/large.bench`. Bookshelf twins: `data/*.aux` (plus `.nodes` / `.nets` / `.scl`).
 
 ## Build (Linux)
 
@@ -46,7 +46,7 @@ Needs CMake 3.16+, a C++17 compiler (g++ 9+ or clang 9+).
 ## CLI
 
 ```
-./build/mini-pd <input.bench> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]
+./build/mini-pd <input.bench|.aux> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]
 ```
 
 Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `random`. Default legalizer is `snap`; `--abacus` selects Abacus.
@@ -55,13 +55,14 @@ Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default 
 
 ```
 src/ir/          design IR
-src/io/          tiny-format parser
+src/io/          tiny-format parser, Bookshelf (.aux)
 src/place/       IPlacer — Random, quadratic
 src/legalize/    ILegalizer — Snap, Abacus
 src/metrics/     HPWL
 src/viz/         SVG + qor.txt
 src/route/       header only; not started
 src/flow.cpp     CLI
+scripts/         .bench → Bookshelf twins
 tests/           HPWL contract test
 ```
 

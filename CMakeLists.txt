@@ -15,6 +15,7 @@ endfunction()
 
 add_library(minipd
   src/io/parser.cpp
+  src/io/bookshelf.cpp
   src/metrics/hpwl.cpp
   src/viz/svg.cpp
   src/viz/qor.cpp

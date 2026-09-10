@@ -19,7 +19,7 @@ namespace fs = std::filesystem;
 
 static void usage(const char* argv0) {
     std::cerr << "usage: " << argv0
-              << " <input.bench> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]\n";
+              << " <input.bench|.aux> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]\n";
 }
 
 int main(int argc, char** argv) {
