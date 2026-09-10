@@ -1,0 +1,47 @@
+# Same 20 cells / 200x100 die as medium.bench, but every net is 2-pin.
+# Hypernets from medium split into chains so G-cell L-pattern can run
+# before MST. Not a placer gold; do not compare HPWL to medium.bench.
+DIE 0 0 200 100
+ROWS 10 10
+CELL a0 4 2
+CELL a1 4 2
+CELL a2 6 2
+CELL a3 4 2
+CELL b0 4 2
+CELL b1 8 2
+CELL b2 4 2
+CELL b3 4 2
+CELL c0 4 2
+CELL c1 4 2
+CELL c2 4 2
+CELL c3 6 2
+CELL d0 4 2
+CELL d1 4 2
+CELL d2 4 2
+CELL d3 4 2
+CELL e0 8 2
+CELL e1 4 2
+CELL e2 4 2
+CELL e3 4 2
+NET clk0 a0 b0
+NET clk1 b0 c0
+NET clk2 c0 d0
+NET clk3 d0 e0
+NET n0a a0 a1
+NET n0b a1 a2
+NET n1a a2 a3
+NET n1b a3 b0
+NET n2a b0 b1
+NET n2b b1 b2
+NET n2c b2 b3
+NET n3a c0 c1
+NET n3b c1 c2
+NET n4a c2 c3
+NET n4b c3 d0
+NET n5a d0 d1
+NET n5b d1 d2
+NET n5c d2 d3
+NET n6a e0 e1
+NET n6b e1 e2
+NET n7a e2 e3
+NET n7b e3 a0

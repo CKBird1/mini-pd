@@ -4,6 +4,8 @@
 
 namespace minipd {
 
+// Global routing. v1 impl is GcellRouter in gcell.hpp.
+// Does not move cells.
 class IRouter {
 public:
     virtual ~IRouter() = default;

@@ -5,6 +5,7 @@
 #include "place/placer.hpp"
 #include "place/quadratic.hpp"
 #include "place/random.hpp"
+#include "route/gcell.hpp"
 #include "viz/qor.hpp"
 #include "viz/svg.hpp"
 
@@ -19,15 +20,16 @@ namespace fs = std::filesystem;
 
 static void usage(const char* argv0) {
     std::cerr << "usage: " << argv0
-              << " <input.bench|.aux> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]\n";
+              << " <input.bench|.aux> -o <outdir> [--seed N]"
+              << " [--placer quadratic|random] [--legalizer abacus|snap]\n";
 }
 
 int main(int argc, char** argv) {
     std::string input;
     std::string outdir;
     std::uint32_t seed = 1;
-    std::string placer_name = "random";
-    bool use_abacus = false;
+    std::string placer_name = "quadratic";
+    std::string legalizer_name = "abacus";
 
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -49,8 +51,12 @@ int main(int argc, char** argv) {
                 return 2;
             }
             placer_name = argv[++i];
-        } else if (a == "--abacus") {
-            use_abacus = true;
+        } else if (a == "--legalizer") {
+            if (i + 1 >= argc) {
+                usage(argv[0]);
+                return 2;
+            }
+            legalizer_name = argv[++i];
         } else if (a == "-h" || a == "--help") {
             usage(argv[0]);
             return 0;
@@ -87,19 +93,29 @@ int main(int argc, char** argv) {
         placer->place(design);
 
         std::unique_ptr<minipd::ILegalizer> legalizer;
-        if (use_abacus) {
+        if (legalizer_name == "abacus") {
             legalizer = std::make_unique<minipd::AbacusLegalizer>();
-        } else {
+        } else if (legalizer_name == "snap") {
             legalizer = std::make_unique<minipd::SnapLegalizer>();
+        } else {
+            std::cerr << "unknown legalizer: " << legalizer_name << "\n";
+            usage(argv[0]);
+            return 2;
         }
         legalizer->legalize(design);
 
+        minipd::GcellRouter router;
+        router.route(design);
+
         const double wirelength = minipd::hpwl(design);
+        const minipd::GcellGrid& grid = router.grid();
 
         fs::create_directories(outdir);
         const fs::path out(outdir);
         minipd::write_placed_svg(design, (out / "placed.svg").string());
         minipd::write_qor(design, input, placer->name(), legalizer->name(), wirelength,
+                         router.name(), grid.nx, grid.ny, grid.capacity,
+                         router.overflow(), router.max_overflow(), router.wirelength(),
                          (out / "qor.txt").string());
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";

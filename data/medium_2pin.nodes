@@ -1,0 +1,24 @@
+UCLA nodes 1.0
+# Same netlist as medium_2pin.bench
+NumNodes : 20
+NumTerminals : 0
+a0 4 2
+a1 4 2
+a2 6 2
+a3 4 2
+b0 4 2
+b1 8 2
+b2 4 2
+b3 4 2
+c0 4 2
+c1 4 2
+c2 4 2
+c3 6 2
+d0 4 2
+d1 4 2
+d2 4 2
+d3 4 2
+e0 8 2
+e1 4 2
+e2 4 2
+e3 4 2

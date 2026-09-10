@@ -23,6 +23,7 @@ add_library(minipd
   src/place/quadratic.cpp
   src/legalize/snap.cpp
   src/legalize/abacus.cpp
+  src/route/gcell.cpp
 )
 target_include_directories(minipd PUBLIC src)
 minipd_warnings(minipd)
@@ -36,3 +37,8 @@ add_executable(test_hpwl tests/test_hpwl.cpp)
 target_link_libraries(test_hpwl PRIVATE minipd)
 minipd_warnings(test_hpwl)
 add_test(NAME hpwl COMMAND test_hpwl)
+
+add_executable(test_overflow tests/test_overflow.cpp)
+target_link_libraries(test_overflow PRIVATE minipd)
+minipd_warnings(test_overflow)
+add_test(NAME overflow COMMAND test_overflow)

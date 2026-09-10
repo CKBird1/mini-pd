@@ -25,3 +25,8 @@ large.aux 10-seed mean HPWL (200 cells):
 Snap after random beats Abacus on HPWL only because left-pack
 collapses cells toward x=0. Not a better legalizer once quadratic
 clusters.
+
+Date: 2026-09-10
+
+G-cell router scaffold. Grid, capacity, overflow metric in qor. 2-pin L works.
+Kernel (MST) not filled yet.

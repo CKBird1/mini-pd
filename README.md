@@ -1,8 +1,8 @@
 # mini-pd
 
-A small C++ physical-design engine: netlist in, global place, legalize, then metrics and an SVG.
+A small C++ physical-design engine: netlist in, global place, legalize, global route, then metrics and an SVG.
 
-The CLI and IR are meant to stay stable while the algorithms improve. Quality of the first algorithms is 'easiest' to get a working flow. This repo is a learning engine with much room for algorithmic improvements as I go. Eventually I'd like to add some form of router, and maybe even synthesis.
+The CLI and IR are meant to stay stable while the algorithms improve. Quality of the first algorithms is 'easiest' to get a working flow. This repo is a learning engine with much room for algorithmic improvements as I go. Adding basic G-cell router with L and MST, then will bench the project to work on deeper synthesis
 
 ## Status
 
@@ -11,6 +11,8 @@ Day 2: (2026-09-08).    Added snap. Rule is snap to nearest legal row (round not
                         Added quadratic, better than random, although with snap only for legalize the results don't look as impressive as they should.
                         Added abacus tetris, better HPWL than snap (310.8 vs 336 snap on my medium bench)
 Day 3: (2026-09-09).    Added full clusters for Abacus. Improves over tetris abacus from yesterday: 306.3 vs 310.8
+                        Added bookshelf functionality for reading in other peoples designs.
+Day 4: (2026-09-10).    Added grid object to track global router with basic functionality. Added 2-pin L shape usage check and usage update. No MST yet
 
 
 ## Tiny netlist format
@@ -32,7 +34,9 @@ NET n1 c1 c2
 
 `#` starts a comment.
 
-Benches: `data/tiny.bench`, `data/medium.bench`, `data/large.bench`. Bookshelf twins: `data/*.aux` (plus `.nodes` / `.nets` / `.scl`).
+Benches: `data/tiny.bench`, `data/medium.bench`, `data/large.bench`.
+`data/medium_2pin.bench` is a 2-pin L test, not placer gold.
+Bookshelf twins: `data/*.aux` (plus `.nodes` / `.nets` / `.scl`).
 
 ## Build (Linux)
 
@@ -41,15 +45,16 @@ Needs CMake 3.16+, a C++17 compiler (g++ 9+ or clang 9+).
 ./build.sh
 ./build/mini-pd data/tiny.bench -o out/
 ./build/test_hpwl
+./build/test_overflow
 ```
 
 ## CLI
 
 ```
-./build/mini-pd <input.bench|.aux> -o <outdir> [--seed N] [--placer random|quadratic] [--abacus]
+./build/mini-pd <input.bench|.aux> -o <outdir> [--seed N] [--placer quadratic|random] [--legalizer abacus|snap]
 ```
 
-Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `random`. Default legalizer is `snap`; `--abacus` selects Abacus.
+Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `quadratic`. Default legalizer is `abacus`. Pass `--placer random` and/or `--legalizer snap` to use the baselines. Always runs the G-cell global router (2-pin L-pattern in; MST not filled yet).
 
 ## Layout
 
@@ -59,18 +64,17 @@ src/io/          tiny-format parser, Bookshelf (.aux)
 src/place/       IPlacer — Random, quadratic
 src/legalize/    ILegalizer — Snap, Abacus
 src/metrics/     HPWL
-src/viz/         SVG + qor.txt
-src/route/       header only; not started
+src/viz/         SVG + qor.txt (hpwl + overflow)
+src/route/       IRouter — G-cell GR (grid + overflow; L in, MST not yet)
 src/flow.cpp     CLI
 scripts/         .bench → Bookshelf twins
-tests/           HPWL contract test
+tests/           HPWL + overflow contract tests
 ```
 
 ## Roadmap
 
 0. Basic skeleton, functional flow, testing system, output files/QoR results. Snap, Random, and HPWL for basic flow
 1. Bookshelf + quadratic/force placer + Abacus.
-2. Congestion / optional unit-delay slack force + one perf pass.
-3. Sweep scripts, tech note, compare to other engines/old algorithms
-4. Synthesis on the same IR.
-5. G-cell router and beyond
+2. G-cell router (2-pin L + 3+ pin MST)
+3. Sweep scripts, tech note, compare to old algorithms
+
