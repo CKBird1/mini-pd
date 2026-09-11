@@ -19,4 +19,4 @@ fi
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE="${BUILD_TYPE:-Release}"
 cmake --build build -j"$(nproc)"
-echo "binaries: ./build/mini-pd  ./build/test_hpwl  ./build/test_overflow"
+echo "binaries: ./build/mini-pd  ./build/test_hpwl  ./build/test_overflow  ./build/test_mst"

@@ -42,3 +42,8 @@ add_executable(test_overflow tests/test_overflow.cpp)
 target_link_libraries(test_overflow PRIVATE minipd)
 minipd_warnings(test_overflow)
 add_test(NAME overflow COMMAND test_overflow)
+
+add_executable(test_mst tests/test_mst.cpp)
+target_link_libraries(test_mst PRIVATE minipd)
+minipd_warnings(test_mst)
+add_test(NAME mst COMMAND test_mst)
