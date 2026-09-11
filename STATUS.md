@@ -29,4 +29,8 @@ clusters.
 Date: 2026-09-10
 
 G-cell router scaffold. Grid, capacity, overflow metric in qor. 2-pin L works.
-Kernel (MST) not filled yet.
+
+
+Date: 2026-09-11
+
+MST now in, works for everything 2+ pins. Kruskals + L connections + parent tracking

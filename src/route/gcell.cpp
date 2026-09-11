@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <tuple>
 
 namespace minipd {
 
@@ -154,30 +155,59 @@ void GcellRouter::route(Design& design) {
     // MST of pin G-cells, then L-pattern each 2-pin.
     for(const auto& n : design.nets) {
         if(n.pins.size() < 2) continue;
-        if(n.pins.size() > 2) continue; //Skip these for now, come back later, about to start implementation for MST which will account for 3+
-
-        //Guaranteed 2 pins on this net, check if same gcell
+        
         std::vector<GcellCoord> c_pins;
-        for(const auto& p : n.pins) {
-            c_pins.push_back(grid_.pin_gcell(design.cells[p].x, design.cells[p].y));
+        std::vector<int> pin_parents(n.pins.size(), 0);
+        for(std::size_t p = 0; p < n.pins.size(); ++p) {
+            c_pins.push_back(grid_.pin_gcell(design.cells[n.pins[p]].x, design.cells[n.pins[p]].y));
+            pin_parents[p] = p;
         }
 
-        //Now have a vector of all pins (currently should be size 2, updating next)
-        int x = c_pins[0].ix;
-        int y = c_pins[0].iy;
-        bool same_cell = true;
-        for(size_t i = 1; i < c_pins.size(); ++i) {
-            if(c_pins[i].ix != x) same_cell = false;
-            if(c_pins[i].iy != y) same_cell = false;
+        //Now have a vector of all pins, first we need to create a vector of tuples, and then sort by smallest manhattan distance
+        std::vector<std::tuple<int, std::size_t, std::size_t>> possible_connections;
+        for(std::size_t i = 0; i < c_pins.size(); ++i) {
+            for(std::size_t j = i+1; j < c_pins.size(); ++j) {
+                //This is now every pair exactly once, find the manhattan and store
+                int manhat = (abs(c_pins[i].ix - c_pins[j].ix)) + (abs(c_pins[i].iy - c_pins[j].iy));
+                possible_connections.push_back(std::tuple(manhat, i, j));
+            }
         }
-        if(same_cell) continue;
 
-        //Now we can create the actual L shape
-        int hvUsage = grid_.hv_usage(c_pins[0].ix, c_pins[0].iy, c_pins[1].ix, c_pins[1].iy, false);
-        int vhUsage = grid_.vh_usage(c_pins[0].ix, c_pins[0].iy, c_pins[1].ix, c_pins[1].iy, false);
+        //Now sort by manhat
+        std::sort(possible_connections.begin(), possible_connections.end()); 
 
-        if(hvUsage <= vhUsage) (void)grid_.hv_usage(c_pins[0].ix, c_pins[0].iy, c_pins[1].ix, c_pins[1].iy, true);
-        else (void)grid_.vh_usage(c_pins[0].ix, c_pins[0].iy, c_pins[1].ix, c_pins[1].iy, true);
+        auto find = [&](std::size_t x) {
+            while(pin_parents[x] != static_cast<int>(x)) {
+                x = static_cast<std::size_t>(pin_parents[x]);
+            }
+            return x;
+        };
+
+        //Now go through sorted vector and start making pairs
+        for(std::size_t i = 0; i < possible_connections.size(); ++i) {
+            //First make sure they aren't already in the same group
+            if(find(std::get<1>(possible_connections[i])) == find(std::get<2>(possible_connections[i]))) continue;
+
+            //Next make sure the cells aren't the same physical gcell
+            bool same_cell =    (c_pins[std::get<1>(possible_connections[i])].ix == c_pins[std::get<2>(possible_connections[i])].ix) && 
+                                (c_pins[std::get<1>(possible_connections[i])].iy == c_pins[std::get<2>(possible_connections[i])].iy);
+            if(same_cell) { //Group together and don't make a path
+                pin_parents[find(std::get<2>(possible_connections[i]))] = pin_parents[find(std::get<1>(possible_connections[i]))];
+                continue;
+            }
+
+            //We've decided to keep this pair and update everything
+            //Then use prev 2-pin alg to choose the best path, and submit it
+            int hvUsage = grid_.hv_usage(c_pins[std::get<1>(possible_connections[i])].ix, c_pins[std::get<1>(possible_connections[i])].iy, c_pins[std::get<2>(possible_connections[i])].ix, c_pins[std::get<2>(possible_connections[i])].iy, false);
+            int vhUsage = grid_.vh_usage(c_pins[std::get<1>(possible_connections[i])].ix, c_pins[std::get<1>(possible_connections[i])].iy, c_pins[std::get<2>(possible_connections[i])].ix, c_pins[std::get<2>(possible_connections[i])].iy, false);
+
+            if(hvUsage <= vhUsage) (void)grid_.hv_usage(c_pins[std::get<1>(possible_connections[i])].ix, c_pins[std::get<1>(possible_connections[i])].iy, c_pins[std::get<2>(possible_connections[i])].ix, c_pins[std::get<2>(possible_connections[i])].iy, true);
+            else (void)grid_.vh_usage(c_pins[std::get<1>(possible_connections[i])].ix, c_pins[std::get<1>(possible_connections[i])].iy, c_pins[std::get<2>(possible_connections[i])].ix, c_pins[std::get<2>(possible_connections[i])].iy, true);
+
+            //Update parent of both pins to the first pin's parent
+            pin_parents[find(std::get<2>(possible_connections[i]))] = pin_parents[find(std::get<1>(possible_connections[i]))];
+            
+        }
     }
 }
 

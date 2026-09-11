@@ -12,7 +12,9 @@ Day 2: (2026-09-08).    Added snap. Rule is snap to nearest legal row (round not
                         Added abacus tetris, better HPWL than snap (310.8 vs 336 snap on my medium bench)
 Day 3: (2026-09-09).    Added full clusters for Abacus. Improves over tetris abacus from yesterday: 306.3 vs 310.8
                         Added bookshelf functionality for reading in other peoples designs.
-Day 4: (2026-09-10).    Added grid object to track global router with basic functionality. Added 2-pin L shape usage check and usage update. No MST yet
+Day 4: (2026-09-10).    Added grid object to track global router with basic functionality. Added 2-pin L shape usage check and 
+                        usage update. No MST yet
+Day 5: (2026-09-11).    Added final 3+ pin MST using Kruskals, then L connection on the pins
 
 
 ## Tiny netlist format
@@ -54,7 +56,7 @@ Needs CMake 3.16+, a C++17 compiler (g++ 9+ or clang 9+).
 ./build/mini-pd <input.bench|.aux> -o <outdir> [--seed N] [--placer quadratic|random] [--legalizer abacus|snap]
 ```
 
-Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `quadratic`. Default legalizer is `abacus`. Pass `--placer random` and/or `--legalizer snap` to use the baselines. Always runs the G-cell global router (2-pin L-pattern in; MST not filled yet).
+Writes `<outdir>/placed.svg` and `<outdir>/qor.txt`. Default seed is 1. Default placer is `quadratic`. Default legalizer is `abacus`. Pass `--placer random` and/or `--legalizer snap` to use the baselines. Always runs the G-cell global router.
 
 ## Layout
 
@@ -65,7 +67,7 @@ src/place/       IPlacer — Random, quadratic
 src/legalize/    ILegalizer — Snap, Abacus
 src/metrics/     HPWL
 src/viz/         SVG + qor.txt (hpwl + overflow)
-src/route/       IRouter — G-cell GR (grid + overflow; L in, MST not yet)
+src/route/       IRouter — G-cell GR (grid + overflow; MST + L in)
 src/flow.cpp     CLI
 scripts/         .bench → Bookshelf twins
 tests/           HPWL + overflow contract tests

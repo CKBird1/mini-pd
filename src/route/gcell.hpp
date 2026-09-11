@@ -23,7 +23,7 @@ namespace minipd {
 //   gcell_wl     = sum of usage (G-cell hops)
 //
 // Kernel (GcellRouter::route):
-//   MST on pin G-cells (Manhattan), then L-pattern each 2-pin. Right now MST not in, but 2-pin L is. Will add MST soon
+//   MST on pin G-cells (Manhattan), then L-pattern each 2-pin.
 //   Pick the L with less congestion. Maze / INFINITY cost later.
 //
 // Does not mutate Design. Usage lives on the grid.
